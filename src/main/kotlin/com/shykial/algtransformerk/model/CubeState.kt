@@ -15,11 +15,3 @@ class CubeState(
     val edges: Set<Edge>,
 ) : BaseEntity()
 
-enum class CornerPieceState {
-    SOLVED, MISPLACED, TWISTED
-}
-
-enum class EdgePieceState {
-    SOLVED, MISPLACED, FLIPPED
-}
-

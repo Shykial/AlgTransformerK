@@ -32,7 +32,7 @@ class CubeStateUtilsTest extends Specification {
 
         new CubeState(
                 cornersData.collect {
-                    new Corner(it[0], it[1], it[2])
+                    new Corner(*it)
                 }.toSet(),
                 Collections.emptySet()
         )

@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne
 
 @Entity
 class AlgStats(
-    val rawAlg: String,
+    val rawAlgorithm: String,
     val rotationlessAlg: String,
     val rotationCount: Int,
     val stmBeforeCancellations: Int,
@@ -17,5 +17,4 @@ class AlgStats(
     @ManyToOne
     @JoinColumn(name = "post_alg_cube_state_ID")
     val postAlgCubeState: CubeState
-) : BaseEntity() {
-}
+) : BaseEntity()

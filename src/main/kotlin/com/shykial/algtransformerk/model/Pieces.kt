@@ -22,6 +22,14 @@ class Edge(
         get() = edgePieceState == EdgePieceState.SOLVED
 }
 
+enum class CornerPieceState {
+    SOLVED, MISPLACED, TWISTED
+}
+
+enum class EdgePieceState {
+    SOLVED, MISPLACED, FLIPPED
+}
+
 enum class CornerPosition(val solvedState: String) {
     // U face corners:
     UBL("WBO"),
