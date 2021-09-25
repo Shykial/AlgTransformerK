@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import static com.shykial.algtransformerk.model.CornerPosition.*
 
-class CubeStateUtilsTest extends Specification {
+class CubeStateExtTest extends Specification {
     def "should properly group corners"(CubeState cubeState, String outcome) {
         def corners = cubeState.groupedCorners
 
@@ -15,7 +15,6 @@ class CubeStateUtilsTest extends Specification {
             getRandomCubeState() | ""
 
     }
-
 
     @SuppressWarnings('GroovyAssignabilityCheck')
     static CubeState getRandomCubeState() {

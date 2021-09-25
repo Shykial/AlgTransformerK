@@ -1,3 +1,3 @@
 moduleName=string-extension-module
 moduleVersion=1.0.0
-extensionClasses=com.shykial.algtransformerk.model.CubeStateUtilsKt
+extensionClasses=com.shykial.algtransformerk.model.CubeStateExtKt

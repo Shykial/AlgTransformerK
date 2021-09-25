@@ -21,7 +21,6 @@ fun CubeState.getGroupedCorners(): Map<CornerPieceState, Map<CornerPosition, Str
             innerMap.apply { this[element.cornerPosition] = element.currentPieceColors }
         }
 
-
 fun CubeState.getGroupedEdges(): Map<EdgePieceState, Map<EdgePosition, String>> =
     edges.groupingBy { it.edgePieceState }
         .aggregate { _, accumulator: EnumMap<EdgePosition, String>?, element, first ->
@@ -36,21 +35,12 @@ private fun CubeState.cornersStateString(): String =
         .groupingBy(Corner::cornerPieceState)
         .eachCount()
         .toSortedMap()
-        .entries.fold(StringBuilder()) { s, (state, count) ->
-            s.append("$count${CORNER_STRINGS[state]}")
-        }.toString()
-
+        .entries.joinToString { (state, count) -> "$count${CORNER_STRINGS[state]}" }
 
 private fun CubeState.edgesStateString(): String =
     edges.filterNot(Edge::solved)
         .groupingBy(Edge::edgePieceState)
         .eachCount()
         .toSortedMap()
-        .entries.fold(StringBuilder()) { s, (state, count) ->
-            s.append("$count${EDGE_STRINGS[state]}")
-        }.toString()
-
-
-
-
+        .entries.joinToString { (state, count) -> "$count${EDGE_STRINGS[state]}" }
 
