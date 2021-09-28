@@ -1,12 +1,13 @@
 package com.shykial.algtransformerk.services
 
 import com.shykial.algtransformerk.dtos.AlgStatsDto
+import com.shykial.algtransformerk.helpers.withoutRotations
 import com.shykial.algtransformerk.model.AlgStats
 import com.shykial.algtransformerk.repositories.AlgStatsRepository
 import com.shykial.algtransformerk.toDto
 import org.springframework.stereotype.Service
 
-private val OPPOSITE_MOVES = mapOf(
+val OPPOSITE_MOVES = mapOf(
     'R' to 'L',
     'L' to 'R',
     'U' to 'D',
@@ -15,8 +16,8 @@ private val OPPOSITE_MOVES = mapOf(
     'B' to 'F'
 )
 
-private val MOVE_FLAGS = mapOf(
-    '\'' to -1,
+val SIGN_TO_MOVE_FLAG = mapOf(
+    '\'' to 3,
     '2' to 2
 ).withDefault { 1 }
 
@@ -26,8 +27,8 @@ private val OPPOSITE_MOVE_FLAGS = mapOf(
 ).withDefault { "'" }
 
 private val INNER_MOVES_REGEX = Regex("""[\[(] (.*?) [)\]] (?:\s?\*?\s?(\d))?""", option = RegexOption.COMMENTS)
-private val WHITE_SPACE_REGEX = Regex("""\s+""")
-private val MOVE_FLAG_REGEX = Regex("""['2]$""")
+val WHITE_SPACE_REGEX = Regex("""\s+""")
+val MOVE_FLAG_REGEX = Regex("""['2]$""")
 
 operator fun <T> List<T>.times(times: Int): List<T> = (1..times).flatMap { this }
 
@@ -39,7 +40,9 @@ class AlgService(private val algStatsRepository: AlgStatsRepository) {
     }
 
     private fun generateAlgStats(rawAlgorithm: String): AlgStats {
-        val moves = withCancellations(readMoves(rawAlgorithm))
+        val moves = readMoves(rawAlgorithm)
+        val standardizedMoves = withoutRotations(moves)
+        val movesWithCancellations = withCancellations(standardizedMoves)
         TODO()
     }
 }
@@ -91,22 +94,22 @@ private fun toOppositeMove(move: String) =
 private fun String.movesInRange(range: IntRange): List<String> =
     with(substring(range)) { if (isBlank()) emptyList() else trim().split(WHITE_SPACE_REGEX) }
 
-private fun withCancellations(inputList: List<String>): List<String> {
-    val effectiveList = inputList.toMutableList()
+private fun withCancellations(moves: List<String>): List<String> {
+    val effectiveMoves = moves.toMutableList()
     var currentIndex = 1
-    while (currentIndex <= effectiveList.lastIndex) {
-        if (effectiveList[currentIndex].first() == effectiveList[currentIndex - 1].first()) {
-            currentIndex = effectiveList.cancelReturningIndex(currentIndex - 1, currentIndex)
+    while (currentIndex <= effectiveMoves.lastIndex) {
+        if (effectiveMoves[currentIndex].first() == effectiveMoves[currentIndex - 1].first()) {
+            currentIndex = effectiveMoves.cancelReturningIndex(currentIndex - 1, currentIndex)
         } else {
             var j = currentIndex
-            val oppositeMoveChar = OPPOSITE_MOVES[effectiveList[currentIndex - 1].first()]
-            while (j < effectiveList.size && effectiveList[j].first() == oppositeMoveChar) j++
-            if (effectiveList[currentIndex - 1].first() == effectiveList[j].first())
-                currentIndex = effectiveList.cancelReturningIndex(currentIndex - 1, j)
+            val oppositeMoveChar = OPPOSITE_MOVES[effectiveMoves[currentIndex - 1].first()]
+            while (j < effectiveMoves.lastIndex && effectiveMoves[j].first() == oppositeMoveChar) j++
+            if (effectiveMoves[currentIndex - 1].first() == effectiveMoves[j].first())
+                currentIndex = effectiveMoves.cancelReturningIndex(currentIndex - 1, j)
         }
         currentIndex++
     }
-    return effectiveList
+    return effectiveMoves
 }
 
 private fun MutableList<String>.cancelReturningIndex(firstIndex: Int, secondIndex: Int): Int {
@@ -114,19 +117,20 @@ private fun MutableList<String>.cancelReturningIndex(firstIndex: Int, secondInde
     removeAt(secondIndex)
     if (newMove == null) {
         removeAt(firstIndex)
-        return firstIndex - 1
+        return if (firstIndex > 0) firstIndex - 1 else 0
     }
     set(firstIndex, newMove)
     return firstIndex
 }
 
-private fun cancelMoves(firstMove: String, secondMove: String): String? {
+fun cancelMoves(firstMove: String, secondMove: String): String? {
     val withoutFlag = firstMove.replace(MOVE_FLAG_REGEX, "")
-    return when (MOVE_FLAGS.getValue(firstMove.last()) + MOVE_FLAGS.getValue(secondMove.last())) {
-        -1, 3 -> "$withoutFlag'"
-        0, 4 -> null
+    val summedFlags = SIGN_TO_MOVE_FLAG.getValue(firstMove.last()) + SIGN_TO_MOVE_FLAG.getValue(secondMove.last())
+    return when (summedFlags.mod(4)) {
+        0 -> null
         1 -> withoutFlag
-        2, -2 -> "${withoutFlag}2"
+        2 -> "${withoutFlag}2"
+        3 -> "$withoutFlag'"
         else -> throw IllegalArgumentException()
     }
 }
