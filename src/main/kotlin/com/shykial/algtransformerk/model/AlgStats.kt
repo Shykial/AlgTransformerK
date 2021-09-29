@@ -7,7 +7,7 @@ import javax.persistence.ManyToOne
 @Entity
 class AlgStats(
     val rawAlgorithm: String,
-    val rotationlessAlg: String,
+    val standardizedAlgorithm: String,
     val rotationCount: Int,
     val stmBeforeCancellations: Int,
     val stmAfterCancellations: Int,

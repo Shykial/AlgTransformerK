@@ -3,7 +3,7 @@ package com.shykial.algtransformerk.helpers
 import com.shykial.algtransformerk.services.SIGN_TO_MOVE_FLAG
 import com.shykial.algtransformerk.services.WHITE_SPACE_REGEX
 
-private const val MIDDLE_MOVES = "MSE"
+const val MIDDLE_MOVES = "MSE"
 private val MOVE_FLAG_TO_SIGN = mapOf(
     1 to "",
     2 to "2",
@@ -28,8 +28,11 @@ class MutableRotation(val state: MutableMap<Char, Char> = DEFAULT_MOVE_MAP.toMut
     fun addRotation(rotation: String) {
         val rotationAxis = RotationAxis.valueOf(rotation.first().uppercase())
         val rotationFlag = SIGN_TO_MOVE_FLAG.getValue(rotation.last())
-        val axisMoves = AXIS_MOVES[rotationAxis]!!.toList()
-        val affectedMoves = axisMoves.map { state[it]!! }
+        val axisMoves = AXIS_MOVES[rotationAxis]?.toList()
+            ?: throw IllegalArgumentException("rotation axis $rotationAxis not present in AXIS_MOVES map")
+        val affectedMoves = axisMoves.map {
+            state[it] ?: throw IllegalArgumentException("move $it not present in current state map")
+        }
 
         axisMoves.forEachIndexed { index, move ->
             state[move] = affectedMoves[(index + rotationFlag).mod(4)]

@@ -1,7 +1,7 @@
 package com.shykial.algtransformerk.dtos
 
 class AlgStatsDto(
-    val rotationlessAlgorithm: String,
+    val standardizedAlgorithm: String,
     val rawAlgorithm: String,
     val rotationCount: Int,
     val stmBeforeCancellations: Int,

@@ -26,7 +26,7 @@ dependencies {
     implementation("com.h2database:h2:1.4.200")
     implementation("io.springfox:springfox-boot-starter:3.0.0")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.5")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.8")
     testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
     testImplementation("org.spockframework:spock-spring:2.0-groovy-3.0")
