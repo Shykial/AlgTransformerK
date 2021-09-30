@@ -1,5 +1,7 @@
 package com.shykial.algtransformerk.model
 
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.JoinColumn
@@ -19,11 +21,15 @@ private val EDGE_STRINGS = mapOf(
 
 @Entity
 class CubeState(
+    val leadingMoves: String,
+
     @OneToMany
+    @Cascade(CascadeType.PERSIST, CascadeType.REFRESH)
     @JoinColumn(name = "cube_state_ID")
     val corners: Set<Corner>,
 
     @OneToMany
+    @Cascade(CascadeType.PERSIST, CascadeType.REFRESH)
     @JoinColumn(name = "cube_state_ID")
     val edges: Set<Edge>,
 ) : BaseEntity()

@@ -1,7 +1,9 @@
 package com.shykial.algtransformerk.helpers
 
+import com.shykial.algtransformerk.model.CornerPieceState
 import com.shykial.algtransformerk.model.CornerPosition
 import com.shykial.algtransformerk.model.CornerPosition.*
+import com.shykial.algtransformerk.model.EdgePieceState
 import com.shykial.algtransformerk.model.EdgePosition
 import com.shykial.algtransformerk.model.EdgePosition.*
 import com.shykial.algtransformerk.services.MOVE_FLAG_REGEX
@@ -19,11 +21,17 @@ fun String.swapWithNext(firstIndex: Int): String {
     })
 }
 
-class CubeState(
+class MutableCubeState(
+    val leadingMoves: MutableList<String> = mutableListOf(),
     val corners: MutableMap<CornerPosition, String> = CORNERS.clone(),
     val edges: MutableMap<EdgePosition, String> = EDGES.clone()
 ) {
+    constructor(moves: List<String>) : this() {
+        moves.forEach(this::makeMove)
+    }
+
     fun makeMove(move: String) {
+        leadingMoves.add(move)
         val moveAxis = move.replace(MOVE_FLAG_REGEX, "")
         val moveFlag = SIGN_TO_MOVE_FLAG.getValue(move.last())
 
@@ -40,6 +48,18 @@ class CubeState(
 
         affectPieces(corners, affectedCorners.first, affectedCorners.second, moveFlag)
         affectPieces(edges, affectedEdges.first, affectedEdges.second, moveFlag)
+    }
+
+    fun cornerState(position: CornerPosition) = when {
+        corners[position] == position.solvedState -> CornerPieceState.SOLVED
+        corners[position]?.toHashSet() == position.solvedState.toHashSet() -> CornerPieceState.TWISTED
+        else -> CornerPieceState.MISPLACED
+    }
+
+    fun edgeState(position: EdgePosition) = when {
+        edges[position] == position.solvedState -> EdgePieceState.SOLVED
+        edges[position]?.toHashSet() == position.solvedState.toHashSet() -> EdgePieceState.FLIPPED
+        else -> EdgePieceState.MISPLACED
     }
 }
 

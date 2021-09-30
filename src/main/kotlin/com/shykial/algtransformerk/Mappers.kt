@@ -3,17 +3,17 @@ package com.shykial.algtransformerk
 import com.shykial.algtransformerk.dtos.AlgStatsDto
 import com.shykial.algtransformerk.dtos.CubeStateDto
 import com.shykial.algtransformerk.dtos.SimpleStandardizedAlg
+import com.shykial.algtransformerk.helpers.MutableCubeState
 import com.shykial.algtransformerk.model.*
 
 fun AlgStats.toDto() = AlgStatsDto(
     rawAlgorithm = rawAlgorithm,
     standardizedAlgorithm = standardizedAlgorithm,
     movesCancelled = stmBeforeCancellations - stmAfterCancellations,
-    rotationCount = rotationCount,
     stmBeforeCancellations = stmBeforeCancellations,
     stmAfterCancellations = stmAfterCancellations,
-    initialCubeState = initialCubeState.toDto(),
-    postAlgCubeState = postAlgCubeState.toDto()
+    postAlgCubeState = postAlgCubeState.toDto(),
+    initialCubeState = initialCubeState.toDto()
 )
 
 fun CubeState.toDto() = CubeStateDto(
@@ -28,9 +28,12 @@ fun CubeState.toDto() = CubeStateDto(
     misplacedCorners = corners.count { it.cornerPieceState == CornerPieceState.MISPLACED }
 )
 
-fun AlgStats.toSimpleDto() = SimpleStandardizedAlg(
-    rawAlgorithm = rawAlgorithm,
-    standardizedAlgorithm = standardizedAlgorithm,
-    movesCancelled = stmBeforeCancellations - stmAfterCancellations,
-    postAlgCubeState = postAlgCubeState.cubeStateString()
+fun MutableCubeState.toCubeState() = CubeState(
+    leadingMoves = leadingMoves.joinToString(" "),
+    corners = corners.asSequence().map { (position, value) ->
+        Corner(position, value, cornerState(position))
+    }.toSet(),
+    edges = edges.asSequence().map { (position, value) ->
+        Edge(position, value, edgeState(position))
+    }.toSet()
 )

@@ -16,7 +16,7 @@ class CubeStateTest extends Specification {
                                                                     Map<EdgePosition, String> expectedEdges,
                                                                     Map<CornerPosition, String> expectedCorners) {
         given:
-            CubeState cubeState = new CubeState()
+            MutableCubeState cubeState = new MutableCubeState()
         when:
             scramble.split(" ").each(cubeState::makeMove)
         then:

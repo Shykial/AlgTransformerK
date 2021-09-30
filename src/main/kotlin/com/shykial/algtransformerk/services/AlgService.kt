@@ -3,12 +3,16 @@ package com.shykial.algtransformerk.services
 import com.shykial.algtransformerk.dtos.AlgStatsDto
 import com.shykial.algtransformerk.dtos.SimpleStandardizedAlg
 import com.shykial.algtransformerk.helpers.MIDDLE_MOVES
+import com.shykial.algtransformerk.helpers.MutableCubeState
 import com.shykial.algtransformerk.helpers.RotationAxis
 import com.shykial.algtransformerk.helpers.withoutRotations
 import com.shykial.algtransformerk.model.AlgStats
+import com.shykial.algtransformerk.model.CubeState
+import com.shykial.algtransformerk.model.cubeStateString
 import com.shykial.algtransformerk.repositories.AlgStatsRepository
+import com.shykial.algtransformerk.repositories.CubeStateRepository
+import com.shykial.algtransformerk.toCubeState
 import com.shykial.algtransformerk.toDto
-import com.shykial.algtransformerk.toSimpleDto
 import org.springframework.stereotype.Service
 
 val OPPOSITE_MOVES = mapOf(
@@ -28,11 +32,14 @@ val SIGN_TO_MOVE_FLAG = mapOf(
 val WHITE_SPACE_REGEX = Regex("""\s+""")
 val MOVE_FLAG_REGEX = Regex("""['2]$""")
 val INNER_MOVES_REGEX = Regex("""[\[(] (.*?) [)\]] (?:\s?\*?\s?(\d))?""", option = RegexOption.COMMENTS)
-
+private val EMPTY_LIST = emptyList<String>()
 operator fun <T> List<T>.times(times: Int): List<T> = (1..times).flatMap { this }
 
 @Service
-class AlgService(private val algStatsRepository: AlgStatsRepository) {
+class AlgService(
+    private val algStatsRepository: AlgStatsRepository,
+    private val cubeStateRepository: CubeStateRepository
+) {
     fun getStatsForAlgorithm(rawAlgorithm: String): AlgStatsDto {
         val algStats = algStatsRepository.findByRawAlgorithm(rawAlgorithm) ?: generateAlgStats(rawAlgorithm)
         return algStats.toDto()
@@ -40,26 +47,33 @@ class AlgService(private val algStatsRepository: AlgStatsRepository) {
 
     private fun generateAlgStats(rawAlgorithm: String): AlgStats {
         val standardizedMoves = standardizedMovesOf(rawAlgorithm)
-        algStatsRepository.findByStandardizedAlgorithm(standardizedMoves.joinToString(" "))?.let {
-            return it
-        }
-        TODO()
+        algStatsRepository.findByStandardizedAlgorithm(standardizedMoves.joinToString(" "))?.let { return it }
+
+        val algStats = AlgStats(
+            rawAlgorithm = rawAlgorithm,
+            standardizedAlgorithm = standardizedMoves.joinToString(" "),
+            stmBeforeCancellations = countRawAlgMoves(rawAlgorithm),
+            stmAfterCancellations = standardizedMoves.size,
+            initialCubeState = getOrCreateCubeState(),
+            postAlgCubeState = getOrCreateCubeState(standardizedMoves)
+        )
+        return algStatsRepository.save(algStats)
     }
 
+    private fun getOrCreateCubeState(leadingMoves: List<String> = EMPTY_LIST): CubeState =
+        cubeStateRepository.findByLeadingMoves(leadingMoves.joinToString(" "))
+            ?: cubeStateRepository.save(MutableCubeState(leadingMoves).toCubeState())
+
     fun getSimpleStandardizedAlg(rawAlgorithm: String): SimpleStandardizedAlg {
-        algStatsRepository.findByRawAlgorithm(rawAlgorithm)?.let {
-            return it.toSimpleDto()
+        return with(standardizedMovesOf(rawAlgorithm)) {
+            val rawAlgMoveCount = countRawAlgMoves(rawAlgorithm)
+            SimpleStandardizedAlg(
+                standardizedAlgorithm = "${joinToString(" ")} (${size})",
+                rawAlgorithm = "$rawAlgorithm ($rawAlgMoveCount)",
+                movesCancelled = rawAlgMoveCount - size,
+                postAlgCubeState = getOrCreateCubeState(this).cubeStateString()
+            )
         }
-        val rawAlgMoveCount = countRawAlgMoves(rawAlgorithm)
-//        return with(standardizedMovesOf(rawAlgorithm)) {
-//            SimpleStandardizedAlg(
-//                standardizedAlgorithm = "${joinToString(" ")} (${size})",
-//                rawAlgorithm = "$rawAlgorithm ($rawAlgMoveCount)",
-//                movesCancelled = countRawAlgMoves(rawAlgorithm) - size,
-//                postAlgCubeState = TODO()
-//            )
-//        }
-        TODO("as bove")
     }
 }
 

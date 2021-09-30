@@ -14,8 +14,8 @@ class Corner(
 
 @Entity
 class Edge(
-    val currentPieceColors: String,
     val edgePosition: EdgePosition,
+    val currentPieceColors: String,
     val edgePieceState: EdgePieceState
 ) : BaseEntity() {
     val solved: Boolean
