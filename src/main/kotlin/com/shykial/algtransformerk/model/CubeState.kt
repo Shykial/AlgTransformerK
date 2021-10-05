@@ -34,21 +34,22 @@ class CubeState(
     val edges: Set<Edge>,
 ) : BaseEntity()
 
-fun CubeState.getGroupedCorners(): Map<CornerPieceState, Map<CornerPosition, String>> =
-    corners.groupingBy(Corner::cornerPieceState)
+val CubeState.groupedCorners: Map<CornerPieceState, Map<CornerPosition, String>>
+    get() = corners.groupingBy(Corner::cornerPieceState)
         .aggregate { _, accumulator: EnumMap<CornerPosition, String>?, element, first ->
             val innerMap = if (first) EnumMap(CornerPosition::class.java) else accumulator!!
             innerMap.apply { this[element.cornerPosition] = element.currentPieceColors }
         }
 
-fun CubeState.getGroupedEdges(): Map<EdgePieceState, Map<EdgePosition, String>> =
-    edges.groupingBy(Edge::edgePieceState)
+val CubeState.groupedEdges: Map<EdgePieceState, Map<EdgePosition, String>>
+    get() = edges.groupingBy(Edge::edgePieceState)
         .aggregate { _, accumulator: EnumMap<EdgePosition, String>?, element, first ->
             val innerMap = if (first) EnumMap(EdgePosition::class.java) else accumulator!!
             innerMap.apply { this[element.edgePosition] = element.currentPieceColors }
         }
 
-fun CubeState.cubeStateString(): String = edgesStateString() + cornersStateString()
+val CubeState.cubeStateString: String
+    get() = edgesStateString() + cornersStateString()
 
 private fun CubeState.cornersStateString(): String =
     corners.filterNot(Corner::solved)

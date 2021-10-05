@@ -2,7 +2,6 @@ package com.shykial.algtransformerk
 
 import com.shykial.algtransformerk.dtos.AlgStatsDto
 import com.shykial.algtransformerk.dtos.CubeStateDto
-import com.shykial.algtransformerk.dtos.SimpleStandardizedAlg
 import com.shykial.algtransformerk.helpers.MutableCubeState
 import com.shykial.algtransformerk.model.*
 
@@ -17,9 +16,9 @@ fun AlgStats.toDto() = AlgStatsDto(
 )
 
 fun CubeState.toDto() = CubeStateDto(
-    cubeStateString = cubeStateString(),
-    corners = getGroupedCorners(),
-    edges = getGroupedEdges(),
+    cubeStateString = cubeStateString,
+    corners = groupedCorners,
+    edges = groupedEdges,
     solvedEdges = edges.count(Edge::solved),
     flippedEdges = edges.count { it.edgePieceState == EdgePieceState.FLIPPED },
     misplacedEdges = edges.count { it.edgePieceState == EdgePieceState.MISPLACED },

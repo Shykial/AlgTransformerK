@@ -50,13 +50,13 @@ class MutableCubeState(
         affectPieces(edges, affectedEdges.first, affectedEdges.second, moveFlag)
     }
 
-    fun cornerState(position: CornerPosition) = when {
+    fun cornerState(position: CornerPosition): CornerPieceState = when {
         corners[position] == position.solvedState -> CornerPieceState.SOLVED
         corners[position]?.toHashSet() == position.solvedState.toHashSet() -> CornerPieceState.TWISTED
         else -> CornerPieceState.MISPLACED
     }
 
-    fun edgeState(position: EdgePosition) = when {
+    fun edgeState(position: EdgePosition): EdgePieceState = when {
         edges[position] == position.solvedState -> EdgePieceState.SOLVED
         edges[position]?.toHashSet() == position.solvedState.toHashSet() -> EdgePieceState.FLIPPED
         else -> EdgePieceState.MISPLACED

@@ -44,7 +44,7 @@ class CubeStateKtTest extends Specification {
                 [DFL, "YGO", CornerPieceState.SOLVED]
         ]
 
-        new CubeState(
+        new CubeState('',
                 cornersData.collect {
                     new Corner(*it)
                 }.toSet(),

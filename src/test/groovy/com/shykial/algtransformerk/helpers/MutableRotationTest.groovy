@@ -21,6 +21,7 @@ class MutableRotationTest extends Specification {
                                                  'U': 'F',
                                                  'L': 'D',
                                                  'R': 'U']
+
             "x"                               | ['U': 'F',
                                                  'F': 'D',
                                                  'D': 'B',
@@ -48,7 +49,6 @@ class MutableRotationTest extends Specification {
                                                  'R': 'B',
                                                  'U': 'U',
                                                  'D': 'D']
-
 
             "x y2 z z2 x y2 z' y x z2 y2 x y" | ['U': 'F',
                                                  'F': 'R',

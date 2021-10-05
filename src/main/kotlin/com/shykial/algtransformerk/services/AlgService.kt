@@ -71,7 +71,7 @@ class AlgService(
                 standardizedAlgorithm = "${joinToString(" ")} (${size})",
                 rawAlgorithm = "$rawAlgorithm ($rawAlgMoveCount)",
                 movesCancelled = rawAlgMoveCount - size,
-                postAlgCubeState = getOrCreateCubeState(this).cubeStateString()
+                postAlgCubeState = getOrCreateCubeState(this).cubeStateString
             )
         }
     }
