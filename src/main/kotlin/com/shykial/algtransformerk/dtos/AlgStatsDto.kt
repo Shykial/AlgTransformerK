@@ -1,8 +1,8 @@
 package com.shykial.algtransformerk.dtos
 
 class AlgStatsDto(
-    val standardizedAlgorithm: String,
     val rawAlgorithm: String,
+    val standardizedAlgorithm: String,
     val stmBeforeCancellations: Int,
     val stmAfterCancellations: Int,
     val movesCancelled: Int,

@@ -28,7 +28,6 @@ class CubeStateKtTest extends Specification {
         where:
             cubeState            | _
             getRandomCubeState() | _
-
     }
 
     @SuppressWarnings('GroovyAssignabilityCheck')

@@ -13,6 +13,6 @@ interface AlgStatsRepository : JpaRepository<AlgStats, UUID> {
     @Query("select a from AlgStats a where a.rawAlgorithm = :rawAlgorithm")
     fun findByRawAlgorithm(@Param("rawAlgorithm") rawAlgorithm: String): AlgStats?
 
-    @Query("select a from AlgStats a where a.standardizedAlgorithm = ?1")
+    @Query("select a from AlgStats a where a.standardizedAlgorithm = :algorithm")
     fun findByStandardizedAlgorithm(@Param("algorithm") algorithm: String): AlgStats?
 }

@@ -1,6 +1,5 @@
 package com.shykial.algtransformerk.helpers
 
-
 import spock.lang.Specification
 
 class MutableRotationTest extends Specification {

@@ -49,15 +49,14 @@ class AlgService(
         val standardizedMoves = standardizedMovesOf(rawAlgorithm)
         algStatsRepository.findByStandardizedAlgorithm(standardizedMoves.joinToString(" "))?.let { return it }
 
-        val algStats = AlgStats(
+        return AlgStats(
             rawAlgorithm = rawAlgorithm,
             standardizedAlgorithm = standardizedMoves.joinToString(" "),
             stmBeforeCancellations = countRawAlgMoves(rawAlgorithm),
             stmAfterCancellations = standardizedMoves.size,
             initialCubeState = getOrCreateCubeState(),
             postAlgCubeState = getOrCreateCubeState(standardizedMoves)
-        )
-        return algStatsRepository.save(algStats)
+        ).run(algStatsRepository::save)
     }
 
     private fun getOrCreateCubeState(leadingMoves: List<String> = EMPTY_LIST): CubeState =
